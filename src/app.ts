@@ -1,20 +1,20 @@
 import express, { Express } from 'express';
-import { UserRouter } from './controllers/user.controller';
-import { DBConnect } from './dbconnection/db.connect';
+import { UsersRouter } from './controllers/users.controller';
+import { ServicesRouter } from './controllers/services.controller';
 import bodyParser from 'body-parser';
 import { Logger } from '../main';
+import { dbConnect } from '../main';
 
 export class ServerOrganization {
 	private app: Express;
 	private port: number;
-	private dbConnect: DBConnect;
 
-	constructor(dbConnect: DBConnect, approuter: UserRouter) {
+	constructor(usersrouter: UsersRouter, servicesrouter: ServicesRouter) {
 		this.app = express();
 		this.port = 3000;
-		this.dbConnect = dbConnect;
 		this.appBodyParcer();
-		this.routing(approuter);
+		this.routingUser(usersrouter);
+		this.routingServices(servicesrouter);
 	}
 
 	// Processing Request Body
@@ -22,9 +22,14 @@ export class ServerOrganization {
 		this.app.use(bodyParser.json());
 	}
 
-	// Router
-	private routing(userrouter: UserRouter): void {
-		this.app.use('/', userrouter.router);
+	// routerUsers
+	private routingUser(usersrouter: UsersRouter): void {
+		this.app.use('/users', usersrouter.router);
+	}
+
+	// routerServises
+	private routingServices(servicesrouter: ServicesRouter): void {
+		this.app.use('/services', servicesrouter.router);
 	}
 
 	// Listen server
@@ -33,6 +38,6 @@ export class ServerOrganization {
 			Logger.log(`Server is started, PORT ${this.port}`);
 			await Logger.write(Logger.dataForWrite);
 		});
-		await this.dbConnect.connection();
+		await dbConnect.connection();
 	}
 }

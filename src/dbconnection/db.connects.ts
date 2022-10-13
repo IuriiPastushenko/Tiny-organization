@@ -6,9 +6,10 @@ import {
 	IUserAuthenticate,
 	IUserDepartment,
 	IUserLogin,
-} from '../controllers/user.interface';
+} from '../controllers/interfaces/users.interfaces';
 import { Logger } from '../../main';
 import crypto from 'crypto-js';
+import { IGetCoordinats } from '../controllers/interfaces/services.interfaces';
 
 export class DBConnect {
 	private client: Client;
@@ -125,6 +126,21 @@ export class DBConnect {
 		} catch (err: any) {
 			resultWriteToDB = err.message;
 			return resultWriteToDB;
+		}
+	}
+
+	// Get coordinats of job place
+	async dbGetCoordinats(
+		inputPlace: string,
+		inputUser: IUserAuthenticate,
+	): Promise<IGetCoordinats[] | undefined> {
+		try {
+			const queryToDB = `SELECT lat, lon, lastname, firstname FROM jobplaces, employees WHERE place = '${inputPlace}' and id_employee = '${inputUser.id_employee}'`;
+			const resultDB = await this.client.query(queryToDB);
+			return resultDB.rows[0];
+		} catch (err: any) {
+			Logger.error('Ошибка запроса БД: ', err.message);
+			await Logger.write(Logger.dataForWrite);
 		}
 	}
 }

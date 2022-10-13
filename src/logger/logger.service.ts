@@ -1,7 +1,7 @@
 import { Logger } from 'tslog';
 import { promises } from 'fs';
 import { join } from 'path';
-import { ILogWriter } from './logger.interface';
+import { ILogWriter } from './logger.interfaces';
 
 export class LoggerService {
 	public logger: Logger;

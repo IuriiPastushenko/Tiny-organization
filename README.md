@@ -15,21 +15,25 @@ What needed to be done:
     - regular user can see only herself
     4. Change user's boss (only boss can do that and only for her subordinates)
 
+Addition 1 (commit Second): implemented a method for displaying the weather at the workplace (at the specified coordinates). Weather data is received from the service https://openweathermap.org/current.
 
-This task was completed, the application was created on the Express Node.JS framework in the TypeScript language.
+This task was completed, the application was created on the Express Node.JS framework in the TypeScript language. Database - built on PostgreSQL
 
 Main files:
 main.ts - application launch file;
 /src/app.ts -  server class;
-src/controllers/user_controller.ts - route handler on users(registration, login, list, changedepartment);
+src/controllers/users.controller.ts - route handler on users(registration, login, list, changedepartment);
+src/controllers/services.controller.ts - route handler on service(weather/search);
 /src/midlleware/auth.middleware.ts - token authentication according to the standard JWT;
 /src/dbconnection/dbconnect.ts - query file and data processing from the database;
+src/services/weather/weather_api_sevices.ts - api call file for the weather service;
 /src/logger/logger_service.ts -  event logger, outputs informational messages to the console and writes the main events to the log file.
 
-Database - built on PostgreSQL.
+Database:
 Table department: id_department, department.
 Table jobtitle: id_jobtitle, jobtitle.
 Table employee: id_employee, firstname, lastname, email, phone, password, department, jobtitle.
+Table jobplaces: ID_place, place, lat float4 not null, lon.
 
 
 

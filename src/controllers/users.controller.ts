@@ -1,53 +1,46 @@
 /* eslint-disable indent */
 import { Router, Request, Response } from 'express';
-import { DBConnect } from '../dbconnection/db.connect';
+import { dbConnect } from '../../main';
 import { Logger } from '../../main';
 import {
 	IUser,
 	IUserAuthenticate,
 	IUserDepartment,
 	IUserLogin,
-} from './user.interface';
+} from './interfaces/users.interfaces';
 import * as jwt from 'jsonwebtoken';
 import { authenticateToken } from '../midlleware/auth.middleware';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-export class UserRouter {
+export class UsersRouter {
 	public router = Router();
-	private dbConnect: DBConnect;
 
-	constructor(dbConnect: DBConnect) {
-		this.dbConnect = dbConnect;
+	constructor() {
 		this.usersrouts();
 	}
 
-	// Routing users
-
-	// Registration
 	usersrouts(): void {
-		this.router.post(
-			'/users/registration',
-			async (req: Request, res: Response) => {
-				const dataForDB: IUser = req.body;
-				const resultWriteToDB = await this.dbConnect.userRegistrationWriteToDB(
-					dataForDB,
-				);
-				if (resultWriteToDB === 'success') {
-					Logger.log('Registration is sucessful');
-					res.sendStatus(201);
-				} else {
-					Logger.error('Registration is not sucessful\n', resultWriteToDB);
-					res.sendStatus(406);
-				}
+		// Registration
+		this.router.post('/registration', async (req: Request, res: Response) => {
+			const dataForDB: IUser = req.body;
+			const resultWriteToDB = await dbConnect.userRegistrationWriteToDB(
+				dataForDB,
+			);
+			if (resultWriteToDB === 'success') {
+				Logger.log('Registration is sucessful');
 				res.sendStatus(201);
-			},
-		);
+			} else {
+				Logger.error('Registration is not sucessful\n', resultWriteToDB);
+				res.sendStatus(406);
+			}
+			res.sendStatus(201);
+		});
 
 		// Login
-		this.router.post('/users/login', async (req: Request, res: Response) => {
+		this.router.post('/login', async (req: Request, res: Response) => {
 			const dataForLogin: IUserLogin = req.body;
-			const userFromDB = await this.dbConnect.userLoginExchangeDB(dataForLogin);
+			const userFromDB = await dbConnect.userLoginExchangeDB(dataForLogin);
 			if (typeof userFromDB !== 'string') {
 				Logger.log('Login is sucessful');
 				const userAuth: IUserAuthenticate = {
@@ -68,13 +61,13 @@ export class UserRouter {
 
 		// Return list of users
 		this.router.get(
-			'/users/list',
+			'/list',
 			authenticateToken,
 			async (
 				req: Request & { user?: IUserAuthenticate },
 				res: Response,
 			): Promise<void> => {
-				const listusersFromDB = await this.dbConnect.listOfUssers(
+				const listusersFromDB = await dbConnect.listOfUssers(
 					req.user as IUserAuthenticate,
 				);
 				if (typeof listusersFromDB !== 'string') {
@@ -89,14 +82,14 @@ export class UserRouter {
 
 		// Change user's boss
 		this.router.patch(
-			'/users/changedepartment',
+			'/changedepartment',
 			authenticateToken,
 			async (
 				req: Request & { user?: IUserAuthenticate },
 				res: Response,
 			): Promise<void> => {
 				const dataForDB: IUserDepartment = req.body;
-				const resultWriteToDB = await this.dbConnect.userChangeBossWriteToDB(
+				const resultWriteToDB = await dbConnect.userChangeBossWriteToDB(
 					req.user as IUserAuthenticate,
 					dataForDB,
 				);
