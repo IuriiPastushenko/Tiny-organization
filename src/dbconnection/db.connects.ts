@@ -9,7 +9,6 @@ import {
 } from '../controllers/interfaces/users.interfaces';
 import { Logger } from '../../main';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto-js';
 import { IGetCoordinats } from '../controllers/interfaces/services.interfaces';
 
 export class DBConnect {
