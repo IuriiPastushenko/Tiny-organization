@@ -16,6 +16,7 @@
     "email": "upas@ukr.net"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/express": "^4.17.14",
     "@types/node": "^18.7.23",
     "@types/pg": "^8.6.5",
@@ -33,6 +34,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/jsonwebtoken": "^8.5.9",
     "axios": "^1.1.2",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.0",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",

@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import { Client } from 'pg';
-import { dbkeys, secret } from './db.constants';
+import { dbkeys } from './db.constants';
 import {
 	IUser,
 	IUserAuthenticate,
@@ -8,6 +8,7 @@ import {
 	IUserLogin,
 } from '../controllers/interfaces/users.interfaces';
 import { Logger } from '../../main';
+import bcrypt from 'bcryptjs';
 import crypto from 'crypto-js';
 import { IGetCoordinats } from '../controllers/interfaces/services.interfaces';
 
@@ -33,12 +34,9 @@ export class DBConnect {
 	async userRegistrationWriteToDB(inputData: IUser): Promise<string> {
 		let resultWriteToDB = 'success';
 		try {
-			const ciphertext = crypto.AES.encrypt(
-				`${inputData.password}`,
-				secret,
-			).toString();
+			const password = await bcrypt.hash(inputData.password, 10);
 			const queryToDB = `INSERT INTO employees(firstname, lastname, email, phone, password, department, jobtitle) 
-			VALUES ('${inputData.firstname}', '${inputData.lastname}', '${inputData.email}', '${inputData.phone}', '${ciphertext}', '${inputData.department}', '${inputData.jobtitle}')`;
+			VALUES ('${inputData.firstname}', '${inputData.lastname}', '${inputData.email}', '${inputData.phone}', '${password}', '${inputData.department}', '${inputData.jobtitle}')`;
 			await this.client.query(queryToDB);
 			return resultWriteToDB;
 		} catch (err: any) {
@@ -50,19 +48,15 @@ export class DBConnect {
 	// Read password from BD table employees
 	async userLoginExchangeDB(inputData: IUserLogin): Promise<IUser | string> {
 		try {
-			const querypasswordForDB = `SELECT password FROM employees WHERE email = '${inputData.email}';`;
-			const resultReadFromDB = (await this.client.query(querypasswordForDB))
-				.rows[0];
+			const queryForDB = `SELECT * FROM employees WHERE email = '${inputData.email}';`;
+			const resultReadFromDB = (await this.client.query(queryForDB)).rows[0];
 			if (resultReadFromDB) {
-				const dataForDecrypt = crypto.AES.decrypt(
+				const comparePassword = await bcrypt.compare(
+					inputData.password,
 					resultReadFromDB.password,
-					secret,
 				);
-				const passwordDecrypt = dataForDecrypt.toString(crypto.enc.Utf8);
-				if (passwordDecrypt === inputData.password) {
-					const queryForDB = `SELECT id_employee, firstname, lastname, email, phone, department, jobtitle FROM employees WHERE email = '${inputData.email}';`;
-					const resultReadFromDB = (await this.client.query(queryForDB))
-						.rows[0];
+				if (comparePassword) {
+					resultReadFromDB.password = 'Password is hidden';
 					return resultReadFromDB;
 				} else {
 					const emptyfromDB = 'Password is not correct';
@@ -142,5 +136,11 @@ export class DBConnect {
 			Logger.error('Ошибка запроса БД: ', err.message);
 			await Logger.write(Logger.dataForWrite);
 		}
+	}
+
+	async userUpdatePassword(dataForDB: IUserLogin) {
+		const password = await bcrypt.hash(dataForDB.password, 10);
+		const queryToDB = `UPDATE employees SET password = '${password}' WHERE email = '${dataForDB.email}'`;
+		await this.client.query(queryToDB);
 	}
 }
