@@ -136,10 +136,4 @@ export class DBConnect {
 			await Logger.write(Logger.dataForWrite);
 		}
 	}
-
-	async userUpdatePassword(dataForDB: IUserLogin) {
-		const password = await bcrypt.hash(dataForDB.password, 10);
-		const queryToDB = `UPDATE employees SET password = '${password}' WHERE email = '${dataForDB.email}'`;
-		await this.client.query(queryToDB);
-	}
 }

@@ -105,12 +105,5 @@ export class UsersRouter {
 				}
 			},
 		);
-
-		// change parol
-		this.router.post('/new', async (req: Request, res: Response) => {
-			const dataForDB: IUserLogin = req.body;
-			const resultPassword = await dbConnect.userUpdatePassword(dataForDB);
-			res.sendStatus(201);
-		});
 	}
 }
