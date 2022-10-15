@@ -30,22 +30,19 @@ export class DBConnect {
 	}
 
 	// Write to BD table employees
-	async userRegistrationWriteToDB(inputData: IUser): Promise<string> {
-		let resultWriteToDB = 'success';
+	async userRegistrationWriteToDB(inputData: IUser): Promise<void> {
 		try {
 			const password = await bcrypt.hash(inputData.password, 10);
 			const queryToDB = `INSERT INTO employees(firstname, lastname, email, phone, password, department, jobtitle) 
 			VALUES ('${inputData.firstname}', '${inputData.lastname}', '${inputData.email}', '${inputData.phone}', '${password}', '${inputData.department}', '${inputData.jobtitle}')`;
 			await this.client.query(queryToDB);
-			return resultWriteToDB;
 		} catch (err: any) {
-			resultWriteToDB = err.message;
-			return resultWriteToDB;
+			throw Error(err.message);
 		}
 	}
 
 	// Read password from BD table employees
-	async userLoginExchangeDB(inputData: IUserLogin): Promise<IUser | string> {
+	async userLoginExchangeDB(inputData: IUserLogin): Promise<IUser | void> {
 		try {
 			const queryForDB = `SELECT * FROM employees WHERE email = '${inputData.email}';`;
 			const resultReadFromDB = (await this.client.query(queryForDB)).rows[0];
@@ -58,16 +55,13 @@ export class DBConnect {
 					resultReadFromDB.password = 'Password is hidden';
 					return resultReadFromDB;
 				} else {
-					const emptyfromDB = 'Password is not correct';
-					return emptyfromDB;
+					throw Error('Password is not correct');
 				}
 			} else {
-				const emptyfromDB = 'E-mail is not correct';
-				return emptyfromDB;
+				throw Error('E-mail is not correct');
 			}
 		} catch (err: any) {
-			const errFromDB = err.message;
-			return errFromDB;
+			throw Error(err.message);
 		}
 	}
 
@@ -90,8 +84,7 @@ export class DBConnect {
 			const resultReadFromDB: IUser[] = readFromDB.rows;
 			return resultReadFromDB;
 		} catch (err: any) {
-			const errFromDB = err.message;
-			return errFromDB;
+			throw Error(err.message);
 		}
 	}
 
@@ -99,8 +92,7 @@ export class DBConnect {
 	async userChangeBossWriteToDB(
 		inputUser: IUserAuthenticate,
 		dataForDB: IUserDepartment,
-	): Promise<string> {
-		let resultWriteToDB = 'success';
+	): Promise<void> {
 		try {
 			const queryDepartmentToDB = `SELECT department FROM employees WHERE id_employee = '${dataForDB.id_employee}';`;
 			const queryDepartment = (await this.client.query(queryDepartmentToDB))
@@ -111,14 +103,11 @@ export class DBConnect {
 			) {
 				const queryToDB = `UPDATE employees SET department = '${dataForDB.department}' WHERE id_employee = '${dataForDB.id_employee}';`;
 				await this.client.query(queryToDB);
-				return resultWriteToDB;
 			} else {
-				resultWriteToDB = 'forbidden';
-				return resultWriteToDB;
+				throw Error('Forbidden');
 			}
 		} catch (err: any) {
-			resultWriteToDB = err.message;
-			return resultWriteToDB;
+			throw Error(err.message);
 		}
 	}
 
@@ -132,8 +121,7 @@ export class DBConnect {
 			const resultDB = await this.client.query(queryToDB);
 			return resultDB.rows[0];
 		} catch (err: any) {
-			Logger.error('Ошибка запроса БД: ', err.message);
-			await Logger.write(Logger.dataForWrite);
+			throw Error('Error connect to DB');
 		}
 	}
 }

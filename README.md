@@ -17,6 +17,8 @@ What needed to be done:
 
 Addition 1 (commit Second): implemented a method for displaying the weather at the workplace (at the specified coordinates). Weather data is received from the service https://openweathermap.org/current.
 
+Addition 1 (commit Third): added error handling.
+
 This task was completed, the application was created on the Express Node.JS framework in the TypeScript language. Database - built on PostgreSQL
 
 Main files:

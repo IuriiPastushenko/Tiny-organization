@@ -4,6 +4,7 @@ import { ServicesRouter } from './controllers/services.controller';
 import bodyParser from 'body-parser';
 import { Logger } from '../main';
 import { dbConnect } from '../main';
+import { errorMiddleware } from './ errors/ error.middleware';
 
 export class ServerOrganization {
 	private app: Express;
@@ -15,6 +16,7 @@ export class ServerOrganization {
 		this.appBodyParcer();
 		this.routingUser(usersrouter);
 		this.routingServices(servicesrouter);
+		this.errorMiddleware();
 	}
 
 	// Processing Request Body
@@ -30,6 +32,11 @@ export class ServerOrganization {
 	// routerServises
 	private routingServices(servicesrouter: ServicesRouter): void {
 		this.app.use('/services', servicesrouter.router);
+	}
+
+	// Error exeption
+	private errorMiddleware(): void {
+		this.app.use(errorMiddleware);
 	}
 
 	// Listen server

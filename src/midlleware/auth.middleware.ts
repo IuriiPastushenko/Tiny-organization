@@ -21,11 +21,9 @@ export function authenticateToken(
 		token,
 		'process.env.TOKEN_SECRET as string',
 		(err: any, user: IUserAuthenticate | any) => {
-			if (err) {
-				Logger.error('Token is not correct');
-				return res.sendStatus(403);
+			if (!err) {
+				req.user = user;
 			}
-			req.user = user;
 			next();
 		},
 	);

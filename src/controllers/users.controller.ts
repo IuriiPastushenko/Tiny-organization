@@ -1,5 +1,4 @@
-/* eslint-disable indent */
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { dbConnect } from '../../main';
 import { Logger } from '../../main';
 import {
@@ -11,6 +10,7 @@ import {
 import * as jwt from 'jsonwebtoken';
 import { authenticateToken } from '../midlleware/auth.middleware';
 import * as dotenv from 'dotenv';
+import { HttpException } from '../ errors/httpexception';
 dotenv.config();
 
 export class UsersRouter {
@@ -22,60 +22,67 @@ export class UsersRouter {
 
 	usersrouts(): void {
 		// Registration
-		this.router.post('/registration', async (req: Request, res: Response) => {
-			const dataForDB: IUser = req.body;
-			const resultWriteToDB = await dbConnect.userRegistrationWriteToDB(
-				dataForDB,
-			);
-			if (resultWriteToDB === 'success') {
-				Logger.log('Registration is sucessful');
-				res.sendStatus(201);
-			} else {
-				Logger.error('Registration is not sucessful\n', resultWriteToDB);
-				res.sendStatus(406);
-			}
-			res.sendStatus(201);
-		});
+		this.router.post(
+			'/registration',
+			async (req: Request, res: Response, next: NextFunction) => {
+				try {
+					const dataForDB: IUser = req.body;
+					await dbConnect.userRegistrationWriteToDB(dataForDB);
+					Logger.log('Registration is sucessful');
+					res.status(201).json('Registration is sucessful');
+				} catch (err: any) {
+					next(
+						new HttpException(405, err.message, 'Registration is sucessful'),
+					);
+				}
+			},
+		);
 
 		// Login
-		this.router.post('/login', async (req: Request, res: Response) => {
-			const dataForLogin: IUserLogin = req.body;
-			const userFromDB = await dbConnect.userLoginExchangeDB(dataForLogin);
-			if (typeof userFromDB !== 'string') {
-				Logger.log('Login is sucessful');
-				const userAuth: IUserAuthenticate = {
-					id_employee: userFromDB.id_employee,
-					department: userFromDB.department,
-					jobtitle: userFromDB.jobtitle,
-				};
-				const token = jwt.sign(userAuth, 'process.env.TOKEN_SECRET as string', {
-					expiresIn: '10h',
-				});
-				res.status(201).json({ userFromDB, token });
-			} else {
-				Logger.error('Login is not sucessful\n', userFromDB);
-				res.sendStatus(401);
-			}
-			// }
-		});
-
+		this.router.post(
+			'/login',
+			async (req: Request, res: Response, next: NextFunction) => {
+				try {
+					const dataForLogin: IUserLogin = req.body;
+					const userFromDB = await dbConnect.userLoginExchangeDB(dataForLogin);
+					if (userFromDB) {
+						Logger.log('Login is sucessful');
+						const userAuth: IUserAuthenticate = {
+							id_employee: userFromDB.id_employee,
+							department: userFromDB.department,
+							jobtitle: userFromDB.jobtitle,
+						};
+						const token = jwt.sign(
+							userAuth,
+							'process.env.TOKEN_SECRET as string',
+							{
+								expiresIn: '10h',
+							},
+						);
+						res.status(201).json({ userFromDB, token });
+					}
+				} catch (err: any) {
+					next(new HttpException(401, err.message, 'Unauthorized'));
+				}
+			},
+		);
 		// Return list of users
 		this.router.get(
-			'/list',
+			'/userslist',
 			authenticateToken,
 			async (
 				req: Request & { user?: IUserAuthenticate },
 				res: Response,
+				next: NextFunction,
 			): Promise<void> => {
-				const listusersFromDB = await dbConnect.listOfUssers(
-					req.user as IUserAuthenticate,
-				);
-				if (typeof listusersFromDB !== 'string') {
+				try {
+					const listusersFromDB = await dbConnect.listOfUssers(
+						req.user as IUserAuthenticate,
+					);
 					Logger.log('List of users');
 					res.status(201).json(listusersFromDB);
-				} else {
-					Logger.error('List of users is not available\n', listusersFromDB);
-					res.sendStatus(400);
+				} catch (err: any) {
+					next(new HttpException(403, err.message, 'Token is not correct'));
 				}
 			},
 		);
@@ -87,21 +94,24 @@ export class UsersRouter {
 			async (
 				req: Request & { user?: IUserAuthenticate },
 				res: Response,
+				next: NextFunction,
 			): Promise<void> => {
-				const dataForDB: IUserDepartment = req.body;
-				const resultWriteToDB = await dbConnect.userChangeBossWriteToDB(
-					req.user as IUserAuthenticate,
-					dataForDB,
-				);
-				if (resultWriteToDB === 'success') {
-					Logger.log('Change user_s boss is sucessful');
-					res.sendStatus(201);
-				} else {
-					Logger.error(
-						'Change user_s boss is not sucessful\n',
-						resultWriteToDB,
+				try {
+					const dataForDB: IUserDepartment = req.body;
+					const resultWriteToDB = await dbConnect.userChangeBossWriteToDB(
+						req.user as IUserAuthenticate,
+						dataForDB,
 					);
-					res.sendStatus(403);
+					Logger.log('Change user_s boss is sucessful');
+					res.status(201).json('Change user_s boss is sucessful');
+				} catch (err: any) {
+					next(
+						new HttpException(
+							403,
+							err.message,
+							'Change user_s boss is not sucessful',
+						),
+					);
 				}
 			},
 		);

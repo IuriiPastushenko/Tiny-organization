@@ -41,11 +41,10 @@ async function getWeather(
 			};
 			return weatherOutput;
 		} else {
-			return 'Error api openweathermap';
+			throw Error('Error api openweathermap');
 		}
 	} catch (err: any) {
-		Logger.error('Error api openweathermap: ', err.message);
-		await Logger.write(Logger.dataForWrite);
+		throw Error(err.message);
 	}
 }
 
