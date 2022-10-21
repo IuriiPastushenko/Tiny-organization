@@ -39,8 +39,10 @@ export class ServicesRouter {
 					} else {
 						throw Error('Jobplace is undifined');
 					}
-				} catch (err: any) {
-					next(new HttpException(401, err.message, 'Error service'));
+				} catch (err) {
+					if (err instanceof Error) {
+						next(new HttpException(401, err.message, 'Error service'));
+					}
 				}
 			},
 		);

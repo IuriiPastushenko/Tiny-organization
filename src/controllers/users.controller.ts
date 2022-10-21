@@ -30,10 +30,12 @@ export class UsersRouter {
 					await dbConnect.userRegistrationWriteToDB(dataForDB);
 					Logger.log('Registration is sucessful');
 					res.status(201).json('Registration is sucessful');
-				} catch (err: any) {
-					next(
-						new HttpException(405, err.message, 'Registration is sucessful'),
-					);
+				} catch (err) {
+					if (err instanceof Error) {
+						next(
+							new HttpException(405, err.message, 'Registration is sucessful'),
+						);
+					}
 				}
 			},
 		);
@@ -61,8 +63,10 @@ export class UsersRouter {
 						);
 						res.status(201).json({ userFromDB, token });
 					}
-				} catch (err: any) {
-					next(new HttpException(401, err.message, 'Unauthorized'));
+				} catch (err) {
+					if (err instanceof Error) {
+						next(new HttpException(401, err.message, 'Unauthorized'));
+					}
 				}
 			},
 		);
@@ -81,8 +85,10 @@ export class UsersRouter {
 					);
 					Logger.log('List of users');
 					res.status(201).json(listusersFromDB);
-				} catch (err: any) {
-					next(new HttpException(403, err.message, 'Token is not correct'));
+				} catch (err) {
+					if (err instanceof Error) {
+						next(new HttpException(403, err.message, 'Token is not correct'));
+					}
 				}
 			},
 		);
@@ -104,14 +110,16 @@ export class UsersRouter {
 					);
 					Logger.log('Change user_s boss is sucessful');
 					res.status(201).json('Change user_s boss is sucessful');
-				} catch (err: any) {
-					next(
-						new HttpException(
-							403,
-							err.message,
-							'Change user_s boss is not sucessful',
-						),
-					);
+				} catch (err) {
+					if (err instanceof Error) {
+						next(
+							new HttpException(
+								403,
+								err.message,
+								'Change user_s boss is not sucessful',
+							),
+						);
+					}
 				}
 			},
 		);

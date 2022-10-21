@@ -20,7 +20,7 @@ export function authenticateToken(
 	jwt.verify(
 		token,
 		'process.env.TOKEN_SECRET as string',
-		(err: any, user: IUserAuthenticate | any) => {
+		(err, user: IUserAuthenticate | any) => {
 			if (!err) {
 				req.user = user;
 			}

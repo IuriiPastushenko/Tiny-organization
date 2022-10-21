@@ -23,9 +23,11 @@ export class DBConnect {
 			await this.client.connect();
 			Logger.log('Connection to DB successful');
 			await Logger.write(Logger.dataForWrite);
-		} catch (err: any) {
-			Logger.error('Error connection to DB: ', err.message);
-			await Logger.write(Logger.dataForWrite);
+		} catch (err) {
+			if (err instanceof Error) {
+				Logger.error('Error connection to DB: ', err.message);
+				await Logger.write(Logger.dataForWrite);
+			}
 		}
 	}
 
@@ -36,8 +38,10 @@ export class DBConnect {
 			const queryToDB = `INSERT INTO employees(firstname, lastname, email, phone, password, department, jobtitle) 
 			VALUES ('${inputData.firstname}', '${inputData.lastname}', '${inputData.email}', '${inputData.phone}', '${password}', '${inputData.department}', '${inputData.jobtitle}')`;
 			await this.client.query(queryToDB);
-		} catch (err: any) {
-			throw Error(err.message);
+		} catch (err) {
+			if (err instanceof Error) {
+				throw Error(err.message);
+			}
 		}
 	}
 
@@ -60,13 +64,17 @@ export class DBConnect {
 			} else {
 				throw Error('E-mail is not correct');
 			}
-		} catch (err: any) {
-			throw Error(err.message);
+		} catch (err) {
+			if (err instanceof Error) {
+				throw Error(err.message);
+			}
 		}
 	}
 
 	// Return list of users
-	async listOfUssers(inputUser: IUserAuthenticate): Promise<IUser[] | string> {
+	async listOfUssers(
+		inputUser: IUserAuthenticate,
+	): Promise<IUser[] | undefined> {
 		try {
 			let queryToDB: string;
 			switch (inputUser.jobtitle) {
@@ -83,8 +91,10 @@ export class DBConnect {
 			const readFromDB = await this.client.query(queryToDB);
 			const resultReadFromDB: IUser[] = readFromDB.rows;
 			return resultReadFromDB;
-		} catch (err: any) {
-			throw Error(err.message);
+		} catch (err) {
+			if (err instanceof Error) {
+				throw Error(err.message);
+			}
 		}
 	}
 
@@ -106,8 +116,10 @@ export class DBConnect {
 			} else {
 				throw Error('Forbidden');
 			}
-		} catch (err: any) {
-			throw Error(err.message);
+		} catch (err) {
+			if (err instanceof Error) {
+				throw Error(err.message);
+			}
 		}
 	}
 
@@ -120,8 +132,10 @@ export class DBConnect {
 			const queryToDB = `SELECT lat, lon, lastname, firstname FROM jobplaces, employees WHERE place = '${inputPlace}' and id_employee = '${inputUser.id_employee}'`;
 			const resultDB = await this.client.query(queryToDB);
 			return resultDB.rows[0];
-		} catch (err: any) {
-			throw Error('Error connect to DB');
+		} catch (err) {
+			if (err instanceof Error) {
+				throw Error('Error connect to DB');
+			}
 		}
 	}
 }

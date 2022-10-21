@@ -43,8 +43,10 @@ async function getWeather(
 		} else {
 			throw Error('Error api openweathermap');
 		}
-	} catch (err: any) {
-		throw Error(err.message);
+	} catch (err) {
+		if (err instanceof Error) {
+			throw Error(err.message);
+		}
 	}
 }
 
