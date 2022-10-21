@@ -11,6 +11,9 @@ import * as jwt from 'jsonwebtoken';
 import { authenticateToken } from '../midlleware/auth.middleware';
 import * as dotenv from 'dotenv';
 import { HttpException } from '../ errors/httpexception';
+import { UserRegistrationDto } from '../../users/dto/user.registration.dto';
+import { UserChangeDepartmentDto } from '../../users/user.changedepartment.dto';
+import { validationMiddleware } from '../midlleware/validate.middleware';
 dotenv.config();
 
 export class UsersRouter {
@@ -97,14 +100,17 @@ export class UsersRouter {
 		this.router.patch(
 			'/changedepartment',
 			authenticateToken,
+			validationMiddleware(UserChangeDepartmentDto),
 			async (
-				req: Request & { user?: IUserAuthenticate },
+				req: Request & {
+					user?: IUserAuthenticate;
+				},
 				res: Response,
 				next: NextFunction,
 			): Promise<void> => {
 				try {
 					const dataForDB: IUserDepartment = req.body;
-					const resultWriteToDB = await dbConnect.userChangeBossWriteToDB(
+					await dbConnect.userChangeBossWriteToDB(
 						req.user as IUserAuthenticate,
 						dataForDB,
 					);
