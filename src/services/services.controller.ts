@@ -3,9 +3,11 @@ import { HttpException } from '../ errors/httpexception';
 import { dbConnect } from '../../main';
 import { Logger } from '../../main';
 import { authenticateToken } from '../midlleware/auth.middleware';
-import { getWeather } from '../services/weather/weather_api_sevices';
-import { IGetCoordinats } from './interfaces/services.interfaces';
-import { IUserAuthenticate } from './interfaces/users.interfaces';
+import { getWeather } from './weather/weather_api_sevices';
+import { IGetCoordinats } from './services.interfaces';
+import { IUserAuthenticate } from '../users/users.interfaces';
+import { WeatherDto } from './weather/dto/weather.dto';
+import { validationMiddleware } from '../midlleware/validate.middleware';
 
 export class ServicesRouter {
 	public router = Router();
@@ -18,6 +20,7 @@ export class ServicesRouter {
 		this.router.get(
 			'/weather/search',
 			authenticateToken,
+			//validationMiddleware(WeatherDto),
 			async (
 				req: Request & { user?: IUserAuthenticate },
 				res: Response,

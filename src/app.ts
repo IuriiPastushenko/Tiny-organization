@@ -1,6 +1,6 @@
 import express, { Express } from 'express';
-import { UsersRouter } from './controllers/users.controller';
-import { ServicesRouter } from './controllers/services.controller';
+import { UsersRouter } from './users/users.controller';
+import { ServicesRouter } from './services/services.controller';
 import bodyParser from 'body-parser';
 import { Logger } from '../main';
 import { dbConnect } from '../main';

@@ -6,14 +6,15 @@ import {
 	IUserAuthenticate,
 	IUserDepartment,
 	IUserLogin,
-} from './interfaces/users.interfaces';
+} from './users.interfaces';
 import * as jwt from 'jsonwebtoken';
 import { authenticateToken } from '../midlleware/auth.middleware';
 import * as dotenv from 'dotenv';
 import { HttpException } from '../ errors/httpexception';
-import { UserRegistrationDto } from '../../users/dto/user.registration.dto';
-import { UserChangeDepartmentDto } from '../../users/user.changedepartment.dto';
+import { UserRegistrationDto } from './dto/user.registration.dto';
+import { UserChangeDepartmentDto } from './dto/user.changedepartment.dto';
 import { validationMiddleware } from '../midlleware/validate.middleware';
+import { UserLoginDto } from './dto/user.login.dto';
 dotenv.config();
 
 export class UsersRouter {
@@ -27,6 +28,7 @@ export class UsersRouter {
 		// Registration
 		this.router.post(
 			'/registration',
+			validationMiddleware(UserRegistrationDto),
 			async (req: Request, res: Response, next: NextFunction) => {
 				try {
 					const dataForDB: IUser = req.body;
@@ -36,7 +38,11 @@ export class UsersRouter {
 				} catch (err) {
 					if (err instanceof Error) {
 						next(
-							new HttpException(405, err.message, 'Registration is sucessful'),
+							new HttpException(
+								405,
+								err.message,
+								'Registration is not sucessful',
+							),
 						);
 					}
 				}
@@ -46,6 +52,7 @@ export class UsersRouter {
 		// Login
 		this.router.post(
 			'/login',
+			validationMiddleware(UserLoginDto),
 			async (req: Request, res: Response, next: NextFunction) => {
 				try {
 					const dataForLogin: IUserLogin = req.body;

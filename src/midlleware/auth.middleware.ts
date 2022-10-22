@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { IUserAuthenticate } from '../controllers/interfaces/users.interfaces';
+import { IUserAuthenticate } from '../users/users.interfaces';
 import { Logger } from '../../main';
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';

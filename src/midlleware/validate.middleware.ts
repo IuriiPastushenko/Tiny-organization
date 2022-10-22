@@ -1,7 +1,9 @@
-import { plainToClass, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { HttpException } from '../ errors/httpexception';
+
+// Validate input data
 
 function validationMiddleware<T>(type: any): RequestHandler {
 	return (req: Request, res: Response, next: NextFunction) => {

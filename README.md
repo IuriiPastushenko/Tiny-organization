@@ -19,6 +19,8 @@ Addition 1 (commit Second): implemented a method for displaying the weather at t
 
 Addition 2 (commit Third): added error handling.
 
+Addition 3(commit Fourth): added validate input data. 
+
 This task was completed, the application was created on the Express Node.JS framework in the TypeScript language. Database - built on PostgreSQL
 
 Main files:

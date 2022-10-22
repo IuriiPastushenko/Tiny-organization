@@ -6,10 +6,10 @@ import {
 	IUserAuthenticate,
 	IUserDepartment,
 	IUserLogin,
-} from '../controllers/interfaces/users.interfaces';
+} from '../users/users.interfaces';
 import { Logger } from '../../main';
 import bcrypt from 'bcryptjs';
-import { IGetCoordinats } from '../controllers/interfaces/services.interfaces';
+import { IGetCoordinats } from '../services/services.interfaces';
 
 export class DBConnect {
 	private client: Client;
