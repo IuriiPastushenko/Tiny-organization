@@ -7,7 +7,14 @@ import { HttpException } from '../ errors/httpexception';
 
 function validationMiddleware<T>(type: any): RequestHandler {
 	return (req: Request, res: Response, next: NextFunction) => {
-		validate(plainToInstance(type, req.body)).then(
+		let typeFromReq;
+		if (req.method === 'GET') {
+			typeFromReq = req.query;
+		}
+		if (req.method === 'POST') {
+			typeFromReq = req.body;
+		}
+		validate(plainToInstance(type, typeFromReq)).then(
 			(errors: ValidationError[]) => {
 				if (errors.length > 0) {
 					const message = errors

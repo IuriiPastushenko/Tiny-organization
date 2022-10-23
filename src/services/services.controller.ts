@@ -8,6 +8,7 @@ import { IGetCoordinats } from './services.interfaces';
 import { IUserAuthenticate } from '../users/users.interfaces';
 import { WeatherDto } from './weather/dto/weather.dto';
 import { validationMiddleware } from '../midlleware/validate.middleware';
+import { request } from 'http';
 
 export class ServicesRouter {
 	public router = Router();
@@ -20,7 +21,7 @@ export class ServicesRouter {
 		this.router.get(
 			'/weather/search',
 			authenticateToken,
-			//validationMiddleware(WeatherDto),
+			validationMiddleware(WeatherDto),
 			async (
 				req: Request & { user?: IUserAuthenticate },
 				res: Response,
