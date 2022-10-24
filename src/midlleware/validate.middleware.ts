@@ -22,7 +22,7 @@ function validationMiddleware<T>(type: any): RequestHandler {
 							Object.values(error.constraints as unknown as string),
 						)
 						.join(', ');
-					next(new HttpException(422, message, 'input data is not correct'));
+					next(new HttpException(400, message, 'input data is not correct'));
 				} else {
 					next();
 				}

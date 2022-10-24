@@ -27,6 +27,8 @@ export class DBConnect {
 			if (err instanceof Error) {
 				Logger.error('Error connection to DB: ', err.message);
 				await Logger.write(Logger.dataForWrite);
+			} else {
+				throw 'Unknown type of error';
 			}
 		}
 	}
@@ -41,6 +43,8 @@ export class DBConnect {
 		} catch (err) {
 			if (err instanceof Error) {
 				throw Error(err.message);
+			} else {
+				throw 'Unknown type of error';
 			}
 		}
 	}
@@ -67,6 +71,8 @@ export class DBConnect {
 		} catch (err) {
 			if (err instanceof Error) {
 				throw Error(err.message);
+			} else {
+				throw 'Unknown type of error';
 			}
 		}
 	}
@@ -94,6 +100,8 @@ export class DBConnect {
 		} catch (err) {
 			if (err instanceof Error) {
 				throw Error(err.message);
+			} else {
+				throw 'Unknown type of error';
 			}
 		}
 	}
@@ -119,6 +127,8 @@ export class DBConnect {
 		} catch (err) {
 			if (err instanceof Error) {
 				throw Error(err.message);
+			} else {
+				throw 'Unknown type of error';
 			}
 		}
 	}
@@ -135,6 +145,8 @@ export class DBConnect {
 		} catch (err) {
 			if (err instanceof Error) {
 				throw Error('Error connect to DB');
+			} else {
+				throw 'Unknown type of error';
 			}
 		}
 	}

@@ -39,11 +39,13 @@ export class UsersRouter {
 					if (err instanceof Error) {
 						next(
 							new HttpException(
-								405,
+								503,
 								err.message,
 								'Registration is not sucessful',
 							),
 						);
+					} else {
+						throw 'Unknown type of error';
 					}
 				}
 			},
@@ -76,6 +78,8 @@ export class UsersRouter {
 				} catch (err) {
 					if (err instanceof Error) {
 						next(new HttpException(401, err.message, 'Unauthorized'));
+					} else {
+						throw 'Unknown type of error';
 					}
 				}
 			},
@@ -98,6 +102,8 @@ export class UsersRouter {
 				} catch (err) {
 					if (err instanceof Error) {
 						next(new HttpException(403, err.message, 'Token is not correct'));
+					} else {
+						throw 'Unknown type of error';
 					}
 				}
 			},
@@ -132,6 +138,8 @@ export class UsersRouter {
 								'Change user_s boss is not sucessful',
 							),
 						);
+					} else {
+						throw 'Unknown type of error';
 					}
 				}
 			},
