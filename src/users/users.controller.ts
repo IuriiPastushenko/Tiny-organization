@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { dbConnect } from '../../main';
+import { dbConnect, typeOrmConnects } from '../../main';
 import { Logger } from '../../main';
 import {
 	IUser,
@@ -142,6 +142,18 @@ export class UsersRouter {
 						throw 'Unknown type of error';
 					}
 				}
+			},
+		);
+
+		this.router.post(
+			'/testtypeorm',
+			async (
+				req: Request,
+				res: Response,
+				next: NextFunction,
+			): Promise<void> => {
+				const test = await typeOrmConnects.test();
+				console.log(test);
 			},
 		);
 	}

@@ -2,9 +2,10 @@ import express, { Express } from 'express';
 import { UsersRouter } from './users/users.controller';
 import { ServicesRouter } from './services/services.controller';
 import bodyParser from 'body-parser';
-import { Logger } from '../main';
+import { Logger, typeOrmConnects } from '../main';
 import { dbConnect } from '../main';
 import { errorMiddleware } from './ errors/ error.middleware';
+import { TypeOrmConnects } from './typeorm/ typeorm.connects';
 
 export class ServerOrganization {
 	private app: Express;
@@ -45,6 +46,7 @@ export class ServerOrganization {
 			Logger.log(`Server is started, PORT ${this.port}`);
 			await Logger.write(Logger.dataForWrite);
 		});
-		await dbConnect.connection();
+		//await dbConnect.connection();
+		typeOrmConnects.initialize();
 	}
 }

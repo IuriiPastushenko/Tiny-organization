@@ -1,35 +1,68 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+/* eslint-disable indent */
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Departments } from './departments.entity';
+import { Jobtitles } from './jobtitles.entity';
 
-//     id_employee SERIAL primary key,
-//     firstName character varying(20) not null,
-//     lastName character varying(20) not null,
-//     email character varying(30) not null unique,
-//     phone character varying(30) not null unique,
-//     password character varying(20) not null,
-//     department integer not null,
-//     jobtitle integer not null,
 //     foreign  key(department) references departments(id_department),
 //     foreign key(jobtitle) references jobtitles(id_jobtitle)
 
 @Entity()
 export class Employees {
 	@PrimaryGeneratedColumn()
-	id: number;
+	id_employee: number;
 
 	@Column({
-		length: 100,
+		type: 'varchar',
+		length: 20,
+		nullable: false,
 	})
-	name: string;
+	firstName: string;
 
-	@Column('text')
-	description: string;
+	@Column({
+		type: 'varchar',
+		length: 20,
+		nullable: false,
+	})
+	lastName: string;
 
-	@Column()
-	filename: string;
+	@Column({
+		type: 'varchar',
+		length: 20,
+		nullable: false,
+		unique: true,
+	})
+	email: string;
 
-	@Column('double')
-	views: number;
+	@Column({
+		type: 'numeric',
+		// length: 10,
+		nullable: false,
+		unique: true,
+	})
+	phone: number;
 
-	@Column()
-	isPublished: boolean;
+	@Column({
+		type: 'varchar',
+		length: 70,
+		nullable: false,
+	})
+	password: string;
+
+	@Column({
+		type: 'integer',
+		nullable: true,
+	})
+	department: number;
+
+	@Column({
+		type: 'integer',
+		nullable: true,
+	})
+	jobtitle: number;
+
+	@ManyToOne(() => Departments, (department) => department.employees)
+	departments: Departments;
+
+	@ManyToOne(() => Jobtitles, (jobtitle) => jobtitle.employees)
+	jobtitles: Jobtitles;
 }

@@ -1,29 +1,24 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-// ID_place SERIAL primary key,
-//     place character varying(20) not null unique,
-//     lat float4 not null,
-// 	lon float4 not nul
-
 @Entity()
-export class Employees {
+export class Jobplaces {
 	@PrimaryGeneratedColumn()
-	id: number;
+		id_place: number;
 
 	@Column({
-		length: 100,
+		type: 'varchar',
+		length: 50,
+		nullable: false,
+		unique: true,
 	})
-	name: string;
+	place: string;
 
-	@Column('text')
-	description: string;
+	@Column({ type: 'float4', nullable: false })
+	lat: number;
 
-	@Column()
-	filename: string;
-
-	@Column('double')
-	views: number;
-
-	@Column()
-	isPublished: boolean;
+	@Column({
+		type: 'float4',
+		nullable: false,
+	})
+	lon: number;
 }
