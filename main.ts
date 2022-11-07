@@ -7,7 +7,7 @@ import { TypeOrmConnects } from './src/typeorm/ typeorm.connects';
 
 const Logger: LoggerService = new LoggerService();
 
-// - удалить const dbConnect = new DBConnect();
+// - удалить
 const dbConnect = new DBConnect();
 
 const typeOrmConnects = new TypeOrmConnects();

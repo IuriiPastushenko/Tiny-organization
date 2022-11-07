@@ -37,7 +37,7 @@ export class DBConnect {
 	async userRegistrationWriteToDB(inputData: IUser): Promise<void> {
 		try {
 			const password = await bcrypt.hash(inputData.password, 10);
-			const queryToDB = `INSERT INTO employees(firstname, lastname, email, phone, password, department, jobtitle) 
+			const queryToDB = `INSERT INTO employees(firstame, lastname, email, phone, password, department, jobtitle) 
 			VALUES ('${inputData.firstname}', '${inputData.lastname}', '${inputData.email}', '${inputData.phone}', '${password}', '${inputData.department}', '${inputData.jobtitle}')`;
 			await this.client.query(queryToDB);
 		} catch (err) {

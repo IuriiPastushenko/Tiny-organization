@@ -10,11 +10,11 @@ export function errorMiddleware(
 ): void {
 	if (err instanceof HttpException) {
 		const contentError = err.contentError;
-		Logger.error(`Error ${err.statusCode}: ${contentError}\n${err.message}`);
+		Logger.error(`Error ${err.statusCode}: ${contentError}\n${err}`);
 		res.status(err.statusCode).json({
 			'error cod': `${err.statusCode}`,
 			'error description': `${err.contentError}`,
-			'error from service': err.message,
+			'error from app': err,
 		});
 	} else {
 		Logger.error(` Error 500: ${err.message}`);

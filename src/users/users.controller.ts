@@ -15,6 +15,7 @@ import { UserRegistrationDto } from './dto/user.registration.dto';
 import { UserChangeDepartmentDto } from './dto/user.changedepartment.dto';
 import { validationMiddleware } from '../midlleware/validate.middleware';
 import { UserLoginDto } from './dto/user.login.dto';
+import { TypeOrmConnects } from '../typeorm/ typeorm.connects';
 dotenv.config();
 
 export class UsersRouter {
@@ -32,21 +33,18 @@ export class UsersRouter {
 			async (req: Request, res: Response, next: NextFunction) => {
 				try {
 					const dataForDB: IUser = req.body;
-					await dbConnect.userRegistrationWriteToDB(dataForDB);
+					//await dbConnect.userRegistrationWriteToDB(dataForDB);
+					await typeOrmConnects.userRegistrationWriteToDB(dataForDB);
 					Logger.log('Registration is sucessful');
-					res.status(201).json('Registration is sucessful');
+					res.status(201).json('Registration is successful');
 				} catch (err) {
-					if (err instanceof Error) {
-						next(
-							new HttpException(
-								503,
-								err.message,
-								'Registration is not sucessful',
-							),
-						);
-					} else {
-						throw 'Unknown type of error';
-					}
+					next(
+						new HttpException(
+							401,
+							'Registration is not successful',
+							err as string,
+						),
+					);
 				}
 			},
 		);
@@ -58,7 +56,9 @@ export class UsersRouter {
 			async (req: Request, res: Response, next: NextFunction) => {
 				try {
 					const dataForLogin: IUserLogin = req.body;
-					const userFromDB = await dbConnect.userLoginExchangeDB(dataForLogin);
+					const userFromDB = await typeOrmConnects.userLoginExchangeDB(
+						dataForLogin,
+					);
 					if (userFromDB) {
 						Logger.log('Login is sucessful');
 						const userAuth: IUserAuthenticate = {
@@ -76,38 +76,31 @@ export class UsersRouter {
 						res.status(201).json({ userFromDB, token });
 					}
 				} catch (err) {
-					if (err instanceof Error) {
-						next(new HttpException(401, err.message, 'Unauthorized'));
-					} else {
-						throw 'Unknown type of error';
-					}
+					next(new HttpException(401, 'Unauthorized', err as string));
 				}
 			},
 		);
+
 		// Return list of users
-		this.router.get(
-			'/userslist',
-			authenticateToken,
-			async (
-				req: Request & { user?: IUserAuthenticate },
-				res: Response,
-				next: NextFunction,
-			): Promise<void> => {
-				try {
-					const listusersFromDB = await dbConnect.listOfUssers(
-						req.user as IUserAuthenticate,
-					);
-					Logger.log('List of users');
-					res.status(201).json(listusersFromDB);
-				} catch (err) {
-					if (err instanceof Error) {
-						next(new HttpException(403, err.message, 'Token is not correct'));
-					} else {
-						throw 'Unknown type of error';
-					}
-				}
-			},
-		);
+		// this.router.get(
+		// 	'/userslist',
+		// 	authenticateToken,
+		// 	async (
+		// 		req: Request & { user?: IUserAuthenticate },
+		// 		res: Response,
+		// 		next: NextFunction,
+		// 	): Promise<void> => {
+		// 		try {
+		// 			const listusersFromDB = await typeOrmConnects.listOfUssers(
+		// 				req.user as IUserAuthenticate,
+		// 			);
+		// 			Logger.log('List of users');
+		// 			res.status(201).json(listusersFromDB);
+		// 		} catch (err) {
+		// 			next(new HttpException(403, 'Token is not correct', err as string));
+		// 		}
+		// 	},
+		// );
 
 		// Change user's boss
 		this.router.patch(
@@ -152,7 +145,7 @@ export class UsersRouter {
 				res: Response,
 				next: NextFunction,
 			): Promise<void> => {
-				const test = await typeOrmConnects.test();
+				const test = await typeOrmConnects.test2();
 				console.log(test);
 			},
 		);

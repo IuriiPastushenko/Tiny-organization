@@ -1,10 +1,7 @@
 /* eslint-disable indent */
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Departments } from './departments.entity';
 import { Jobtitles } from './jobtitles.entity';
-
-//     foreign  key(department) references departments(id_department),
-//     foreign key(jobtitle) references jobtitles(id_jobtitle)
 
 @Entity()
 export class Employees {
@@ -16,14 +13,14 @@ export class Employees {
 		length: 20,
 		nullable: false,
 	})
-	firstName: string;
+	firstname: string;
 
 	@Column({
 		type: 'varchar',
 		length: 20,
 		nullable: false,
 	})
-	lastName: string;
+	lastname: string;
 
 	@Column({
 		type: 'varchar',
@@ -61,8 +58,14 @@ export class Employees {
 	jobtitle: number;
 
 	@ManyToOne(() => Departments, (department) => department.employees)
+	@JoinColumn({
+		name: 'department',
+	})
 	departments: Departments;
 
 	@ManyToOne(() => Jobtitles, (jobtitle) => jobtitle.employees)
+	@JoinColumn({
+		name: 'jobtitle',
+	})
 	jobtitles: Jobtitles;
 }

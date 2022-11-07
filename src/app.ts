@@ -5,7 +5,6 @@ import bodyParser from 'body-parser';
 import { Logger, typeOrmConnects } from '../main';
 import { dbConnect } from '../main';
 import { errorMiddleware } from './ errors/ error.middleware';
-import { TypeOrmConnects } from './typeorm/ typeorm.connects';
 
 export class ServerOrganization {
 	private app: Express;
