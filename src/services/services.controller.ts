@@ -1,11 +1,13 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { HttpException } from '../ errors/httpexception';
-import { dbConnect } from '../../main';
+import { typeOrmConnects } from '../../main';
 import { Logger } from '../../main';
 import { authenticateToken } from '../midlleware/auth.middleware';
-import { getWeather } from '../services/weather/weather_api_sevices';
-import { IGetCoordinats } from './interfaces/services.interfaces';
-import { IUserAuthenticate } from './interfaces/users.interfaces';
+import { getWeather } from './weather/weather_api_sevices';
+import { IGetCoordinats } from './services.interfaces';
+import { IUserAuthenticate } from '../users/users.interfaces';
+import { WeatherDto } from './weather/dto/weather.dto';
+import { validationMiddleware } from '../midlleware/validate.middleware';
 
 export class ServicesRouter {
 	public router = Router();
@@ -18,6 +20,7 @@ export class ServicesRouter {
 		this.router.get(
 			'/weather/search',
 			authenticateToken,
+			validationMiddleware(WeatherDto),
 			async (
 				req: Request & { user?: IUserAuthenticate },
 				res: Response,
@@ -25,22 +28,19 @@ export class ServicesRouter {
 			) => {
 				try {
 					const place = req.query.place as string;
-					const dataFromDB = await dbConnect.dbGetCoordinats(
+					const dataFromDB = await typeOrmConnects.dbGetCoordinats(
 						place,
 						req.user as IUserAuthenticate,
 					);
 					if (dataFromDB && dataFromDB.length !== 0) {
-						const resultWeather = await getWeather(
-							dataFromDB as unknown as IGetCoordinats,
-							place,
-						);
+						const resultWeather = await getWeather(dataFromDB[0], place);
 						Logger.log('Weather is received');
 						res.status(201).json(resultWeather);
 					} else {
-						throw Error('Jobplace is undifined');
+						throw Error('Jobplace is undefined');
 					}
-				} catch (err: any) {
-					next(new HttpException(401, err.message, 'Error service'));
+				} catch (err) {
+					next(new HttpException(401, 'Error service', err as string));
 				}
 			},
 		);

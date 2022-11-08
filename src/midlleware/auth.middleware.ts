@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { IUserAuthenticate } from '../controllers/interfaces/users.interfaces';
+import { IUserAuthenticate } from '../users/users.interfaces';
 import { Logger } from '../../main';
 import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
@@ -20,7 +20,7 @@ export function authenticateToken(
 	jwt.verify(
 		token,
 		'process.env.TOKEN_SECRET as string',
-		(err: any, user: IUserAuthenticate | any) => {
+		(err, user: IUserAuthenticate | any) => {
 			if (!err) {
 				req.user = user;
 			}

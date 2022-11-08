@@ -1,16 +1,20 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { dbConnect } from '../../main';
+import { typeOrmConnects } from '../../main';
 import { Logger } from '../../main';
 import {
 	IUser,
 	IUserAuthenticate,
 	IUserDepartment,
 	IUserLogin,
-} from './interfaces/users.interfaces';
+} from './users.interfaces';
 import * as jwt from 'jsonwebtoken';
 import { authenticateToken } from '../midlleware/auth.middleware';
 import * as dotenv from 'dotenv';
 import { HttpException } from '../ errors/httpexception';
+import { UserRegistrationDto } from './dto/user.registration.dto';
+import { UserChangeDepartmentDto } from './dto/user.changedepartment.dto';
+import { validationMiddleware } from '../midlleware/validate.middleware';
+import { UserLoginDto } from './dto/user.login.dto';
 dotenv.config();
 
 export class UsersRouter {
@@ -24,15 +28,20 @@ export class UsersRouter {
 		// Registration
 		this.router.post(
 			'/registration',
+			validationMiddleware(UserRegistrationDto),
 			async (req: Request, res: Response, next: NextFunction) => {
 				try {
 					const dataForDB: IUser = req.body;
-					await dbConnect.userRegistrationWriteToDB(dataForDB);
+					await typeOrmConnects.userRegistrationWriteToDB(dataForDB);
 					Logger.log('Registration is sucessful');
-					res.status(201).json('Registration is sucessful');
-				} catch (err: any) {
+					res.status(201).json('Registration is successful');
+				} catch (err) {
 					next(
-						new HttpException(405, err.message, 'Registration is sucessful'),
+						new HttpException(
+							401,
+							'Registration is not successful',
+							err as string,
+						),
 					);
 				}
 			},
@@ -41,10 +50,13 @@ export class UsersRouter {
 		// Login
 		this.router.post(
 			'/login',
+			validationMiddleware(UserLoginDto),
 			async (req: Request, res: Response, next: NextFunction) => {
 				try {
 					const dataForLogin: IUserLogin = req.body;
-					const userFromDB = await dbConnect.userLoginExchangeDB(dataForLogin);
+					const userFromDB = await typeOrmConnects.userLoginExchangeDB(
+						dataForLogin,
+					);
 					if (userFromDB) {
 						Logger.log('Login is sucessful');
 						const userAuth: IUserAuthenticate = {
@@ -61,11 +73,12 @@ export class UsersRouter {
 						);
 						res.status(201).json({ userFromDB, token });
 					}
-				} catch (err: any) {
-					next(new HttpException(401, err.message, 'Unauthorized'));
+				} catch (err) {
+					next(new HttpException(401, 'Unauthorized', err as string));
 				}
 			},
 		);
+
 		// Return list of users
 		this.router.get(
 			'/userslist',
@@ -76,13 +89,13 @@ export class UsersRouter {
 				next: NextFunction,
 			): Promise<void> => {
 				try {
-					const listusersFromDB = await dbConnect.listOfUssers(
+					const listusersFromDB = await typeOrmConnects.listOfUssers(
 						req.user as IUserAuthenticate,
 					);
 					Logger.log('List of users');
 					res.status(201).json(listusersFromDB);
-				} catch (err: any) {
-					next(new HttpException(403, err.message, 'Token is not correct'));
+				} catch (err) {
+					next(new HttpException(403, 'Token is not correct', err as string));
 				}
 			},
 		);
@@ -91,25 +104,28 @@ export class UsersRouter {
 		this.router.patch(
 			'/changedepartment',
 			authenticateToken,
+			validationMiddleware(UserChangeDepartmentDto),
 			async (
-				req: Request & { user?: IUserAuthenticate },
+				req: Request & {
+					user?: IUserAuthenticate;
+				},
 				res: Response,
 				next: NextFunction,
 			): Promise<void> => {
 				try {
 					const dataForDB: IUserDepartment = req.body;
-					const resultWriteToDB = await dbConnect.userChangeBossWriteToDB(
+					await typeOrmConnects.userChangeBossWriteToDB(
 						req.user as IUserAuthenticate,
 						dataForDB,
 					);
 					Logger.log('Change user_s boss is sucessful');
-					res.status(201).json('Change user_s boss is sucessful');
-				} catch (err: any) {
+					res.status(201).json('Change user_s boss is successful');
+				} catch (err) {
 					next(
 						new HttpException(
 							403,
-							err.message,
-							'Change user_s boss is not sucessful',
+							'Change user_s boss is not successful',
+							err as string,
 						),
 					);
 				}

@@ -1,7 +1,7 @@
 export interface IWeatherOutput {
 	data: string;
-	firstname: string;
-	lastname: string;
+	firstname: string | undefined;
+	lastname: string | undefined;
 	jobplace: string;
 	weatherOnStreet: string;
 	temperature: string;
