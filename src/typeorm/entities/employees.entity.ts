@@ -1,5 +1,11 @@
 /* eslint-disable indent */
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+	Entity,
+	Column,
+	PrimaryGeneratedColumn,
+	ManyToOne,
+	JoinColumn,
+} from 'typeorm';
 import { Departments } from './departments.entity';
 import { Jobtitles } from './jobtitles.entity';
 

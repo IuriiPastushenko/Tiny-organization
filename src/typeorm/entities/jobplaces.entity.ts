@@ -11,14 +11,14 @@ export class Jobplaces {
 		nullable: false,
 		unique: true,
 	})
-		place: string;
+	place: string;
 
 	@Column({ type: 'float4', nullable: false })
-		lat: number;
+	lat: number;
 
 	@Column({
 		type: 'float4',
 		nullable: false,
 	})
-		lon: number;
+	lon: number;
 }
