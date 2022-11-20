@@ -38,7 +38,6 @@ export class Employees {
 
 	@Column({
 		type: 'numeric',
-		// length: 10,
 		nullable: false,
 		unique: true,
 	})

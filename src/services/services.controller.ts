@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { HttpException } from '../ errors/httpexception';
+import { HttpException } from '../errors/httpexception';
 import { typeOrmConnects } from '../../main';
 import { Logger } from '../../main';
 import { authenticateToken } from '../midlleware/auth.middleware';

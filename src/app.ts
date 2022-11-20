@@ -3,7 +3,7 @@ import { UsersRouter } from './users/users.controller';
 import { ServicesRouter } from './services/services.controller';
 import bodyParser from 'body-parser';
 import { Logger, typeOrmConnects } from '../main';
-import { errorMiddleware } from './ errors/ error.middleware';
+import { errorMiddleware } from './errors/ error.middleware';
 
 export class ServerOrganization {
 	private app: Express;
@@ -44,6 +44,6 @@ export class ServerOrganization {
 			Logger.log(`Server is started, PORT ${this.port}`);
 			await Logger.write(Logger.dataForWrite);
 		});
-		typeOrmConnects.initialize();
+		await typeOrmConnects.initialize();
 	}
 }
