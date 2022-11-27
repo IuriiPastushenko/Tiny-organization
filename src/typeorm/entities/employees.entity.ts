@@ -1,76 +1,76 @@
 /* eslint-disable indent */
 import {
-	Entity,
-	Column,
-	PrimaryGeneratedColumn,
-	ManyToOne,
-	JoinColumn,
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Departments } from './departments.entity';
 import { Jobtitles } from './jobtitles.entity';
 
 @Entity()
 export class Employees {
-	@PrimaryGeneratedColumn()
-	id_employee: number;
+  @PrimaryGeneratedColumn()
+  id_employee: number;
 
-	@Column({
-		type: 'varchar',
-		length: 20,
-		nullable: false,
-	})
-	firstname: string;
+  @Column({
+    type: 'varchar',
+    length: 20,
+    nullable: false,
+  })
+  firstname: string;
 
-	@Column({
-		type: 'varchar',
-		length: 20,
-		nullable: false,
-	})
-	lastname: string;
+  @Column({
+    type: 'varchar',
+    length: 20,
+    nullable: false,
+  })
+  lastname: string;
 
-	@Column({
-		type: 'varchar',
-		length: 20,
-		nullable: false,
-		unique: true,
-	})
-	email: string;
+  @Column({
+    type: 'varchar',
+    length: 20,
+    nullable: false,
+    unique: true,
+  })
+  email: string;
 
-	@Column({
-		type: 'numeric',
-		nullable: false,
-		unique: true,
-	})
-	phone: number;
+  @Column({
+    type: 'numeric',
+    nullable: false,
+    unique: true,
+  })
+  phone: number;
 
-	@Column({
-		type: 'varchar',
-		length: 70,
-		nullable: false,
-	})
-	password: string;
+  @Column({
+    type: 'varchar',
+    length: 70,
+    nullable: false,
+  })
+  password: string;
 
-	@Column({
-		type: 'integer',
-		nullable: true,
-	})
-	department: number;
+  @Column({
+    type: 'integer',
+    nullable: true,
+  })
+  department: number;
 
-	@Column({
-		type: 'integer',
-		nullable: true,
-	})
-	jobtitle: number;
+  @Column({
+    type: 'integer',
+    nullable: true,
+  })
+  jobtitle: number;
 
-	@ManyToOne(() => Departments, (department) => department.employees)
-	@JoinColumn({
-		name: 'department',
-	})
-	departments: Departments;
+  @ManyToOne(() => Departments, (department) => department.employees)
+  @JoinColumn({
+    name: 'department',
+  })
+  departments: Departments;
 
-	@ManyToOne(() => Jobtitles, (jobtitle) => jobtitle.employees)
-	@JoinColumn({
-		name: 'jobtitle',
-	})
-	jobtitles: Jobtitles;
+  @ManyToOne(() => Jobtitles, (jobtitle) => jobtitle.employees)
+  @JoinColumn({
+    name: 'jobtitle',
+  })
+  jobtitles: Jobtitles;
 }

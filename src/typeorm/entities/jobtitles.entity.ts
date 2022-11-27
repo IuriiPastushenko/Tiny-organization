@@ -3,12 +3,12 @@ import { Employees } from './employees.entity';
 
 @Entity()
 export class Jobtitles {
-	@PrimaryGeneratedColumn()
-	id_jobtitle: number;
+  @PrimaryGeneratedColumn()
+  id_jobtitle: number;
 
-	@Column({ type: 'varchar', length: 20, nullable: false, unique: true })
-	jobtitle: string;
+  @Column({ type: 'varchar', length: 20, nullable: false, unique: true })
+  jobtitle: string;
 
-	@OneToMany(() => Employees, (employee) => employee.jobtitle)
-	employees: Employees[];
+  @OneToMany(() => Employees, (employee) => employee.jobtitle)
+  employees: Employees[];
 }

@@ -10,11 +10,11 @@ const typeOrmConnects = new TypeOrmConnects();
 
 // Describing the bootstrap method
 async function bootstrap(): Promise<void> {
-	const serverOrganization = new ServerOrganization(
-		new UsersRouter(),
-		new ServicesRouter(),
-	);
-	await serverOrganization.init();
+  const serverOrganization = new ServerOrganization(
+    new UsersRouter(),
+    new ServicesRouter(),
+  );
+  await serverOrganization.init();
 }
 
 bootstrap();

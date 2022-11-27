@@ -2,10 +2,10 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { typeOrmConnects } from '../../main';
 import { Logger } from '../../main';
 import {
-	IUser,
-	IUserAuthenticate,
-	IUserDepartment,
-	IUserLogin,
+  IUser,
+  IUserAuthenticate,
+  IUserDepartment,
+  IUserLogin,
 } from './users.interfaces';
 import * as jwt from 'jsonwebtoken';
 import { authenticateToken } from '../midlleware/auth.middleware';
@@ -18,118 +18,118 @@ import { UserLoginDto } from './dto/user.login.dto';
 dotenv.config();
 
 export class UsersRouter {
-	public router = Router();
+  public router = Router();
 
-	constructor() {
-		this.usersrouts();
-	}
+  constructor() {
+    this.usersrouts();
+  }
 
-	usersrouts(): void {
-		// Registration
-		this.router.post(
-			'/registration',
-			validationMiddleware(UserRegistrationDto),
-			async (req: Request, res: Response, next: NextFunction) => {
-				try {
-					const dataForDB: IUser = req.body;
-					await typeOrmConnects.userRegistrationWriteToDB(dataForDB);
-					Logger.log('Registration is sucessful');
-					res.status(201).json('Registration is successful');
-				} catch (err) {
-					next(
-						new HttpException(
-							401,
-							'Registration is not successful',
-							err as string,
-						),
-					);
-				}
-			},
-		);
+  usersrouts(): void {
+    // Registration
+    this.router.post(
+      '/registration',
+      validationMiddleware(UserRegistrationDto),
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const dataForDB: IUser = req.body;
+          await typeOrmConnects.userRegistrationWriteToDB(dataForDB);
+          Logger.log('Registration is sucessful');
+          res.status(201).json('Registration is successful');
+        } catch (err) {
+          next(
+            new HttpException(
+              401,
+              'Registration is not successful',
+              err as string,
+            ),
+          );
+        }
+      },
+    );
 
-		// Login
-		this.router.post(
-			'/login',
-			validationMiddleware(UserLoginDto),
-			async (req: Request, res: Response, next: NextFunction) => {
-				try {
-					const dataForLogin: IUserLogin = req.body;
-					const userFromDB = await typeOrmConnects.userLoginExchangeDB(
-						dataForLogin,
-					);
-					if (userFromDB) {
-						Logger.log('Login is sucessful');
-						const userAuth: IUserAuthenticate = {
-							id_employee: userFromDB.id_employee,
-							department: userFromDB.department,
-							jobtitle: userFromDB.jobtitle,
-						};
-						const token = jwt.sign(
-							userAuth,
-							'process.env.TOKEN_SECRET as string',
-							{
-								expiresIn: '10h',
-							},
-						);
-						res.status(201).json({ userFromDB, token });
-					}
-				} catch (err) {
-					next(new HttpException(401, 'Unauthorized', err as string));
-				}
-			},
-		);
+    // Login
+    this.router.post(
+      '/login',
+      validationMiddleware(UserLoginDto),
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const dataForLogin: IUserLogin = req.body;
+          const userFromDB = await typeOrmConnects.userLoginExchangeDB(
+            dataForLogin,
+          );
+          if (userFromDB) {
+            Logger.log('Login is sucessful');
+            const userAuth: IUserAuthenticate = {
+              id_employee: userFromDB.id_employee,
+              department: userFromDB.department,
+              jobtitle: userFromDB.jobtitle,
+            };
+            const token = jwt.sign(
+              userAuth,
+              'process.env.TOKEN_SECRET as string',
+              {
+                expiresIn: '10h',
+              },
+            );
+            res.status(201).json({ userFromDB, token });
+          }
+        } catch (err) {
+          next(new HttpException(401, 'Unauthorized', err as string));
+        }
+      },
+    );
 
-		// Return list of users
-		this.router.get(
-			'/userslist',
-			authenticateToken,
-			async (
-				req: Request & { user?: IUserAuthenticate },
-				res: Response,
-				next: NextFunction,
-			): Promise<void> => {
-				try {
-					const listusersFromDB = await typeOrmConnects.listOfUssers(
-						req.user as IUserAuthenticate,
-					);
-					Logger.log('List of users');
-					res.status(201).json(listusersFromDB);
-				} catch (err) {
-					next(new HttpException(403, 'Token is not correct', err as string));
-				}
-			},
-		);
+    // Return list of users
+    this.router.get(
+      '/userslist',
+      authenticateToken,
+      async (
+        req: Request & { user?: IUserAuthenticate },
+        res: Response,
+        next: NextFunction,
+      ): Promise<void> => {
+        try {
+          const listusersFromDB = await typeOrmConnects.listOfUssers(
+            req.user as IUserAuthenticate,
+          );
+          Logger.log('List of users');
+          res.status(201).json(listusersFromDB);
+        } catch (err) {
+          next(new HttpException(403, 'Token is not correct', err as string));
+        }
+      },
+    );
 
-		// Change user's boss
-		this.router.patch(
-			'/changedepartment',
-			authenticateToken,
-			validationMiddleware(UserChangeDepartmentDto),
-			async (
-				req: Request & {
-					user?: IUserAuthenticate;
-				},
-				res: Response,
-				next: NextFunction,
-			): Promise<void> => {
-				try {
-					const dataForDB: IUserDepartment = req.body;
-					await typeOrmConnects.userChangeBossWriteToDB(
-						req.user as IUserAuthenticate,
-						dataForDB,
-					);
-					Logger.log('Change user_s boss is sucessful');
-					res.status(201).json('Change user_s boss is successful');
-				} catch (err) {
-					next(
-						new HttpException(
-							403,
-							'Change user_s boss is not successful',
-							err as string,
-						),
-					);
-				}
-			},
-		);
-	}
+    // Change user's boss
+    this.router.patch(
+      '/changedepartment',
+      authenticateToken,
+      validationMiddleware(UserChangeDepartmentDto),
+      async (
+        req: Request & {
+          user?: IUserAuthenticate;
+        },
+        res: Response,
+        next: NextFunction,
+      ): Promise<void> => {
+        try {
+          const dataForDB: IUserDepartment = req.body;
+          await typeOrmConnects.userChangeBossWriteToDB(
+            req.user as IUserAuthenticate,
+            dataForDB,
+          );
+          Logger.log('Change user_s boss is sucessful');
+          res.status(201).json('Change user_s boss is successful');
+        } catch (err) {
+          next(
+            new HttpException(
+              403,
+              'Change user_s boss is not successful',
+              err as string,
+            ),
+          );
+        }
+      },
+    );
+  }
 }

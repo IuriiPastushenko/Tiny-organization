@@ -1,22 +1,22 @@
 export interface IUserLogin {
-	email: string;
-	password: string;
+  email: string;
+  password: string;
 }
 
 export interface IUserDepartment {
-	id_employee: number;
-	department: number;
+  id_employee: number;
+  department: number;
 }
 
 export interface IUser extends IUserLogin, IUserDepartment {
-	firstname: string;
-	lastname: string;
-	phone: number;
-	jobtitle: number;
+  firstname: string;
+  lastname: string;
+  phone: number;
+  jobtitle: number;
 }
 
 export interface IUserAuthenticate {
-	id_employee: number;
-	department: number;
-	jobtitle: number;
+  id_employee: number;
+  department: number;
+  jobtitle: number;
 }

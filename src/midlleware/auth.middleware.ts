@@ -7,24 +7,24 @@ dotenv.config();
 
 // middleware function for authentication
 export function authenticateToken(
-	req: Request & { user?: IUserAuthenticate },
-	res: Response,
-	next: NextFunction,
+  req: Request & { user?: IUserAuthenticate },
+  res: Response,
+  next: NextFunction,
 ): number | IUserAuthenticate | any {
-	const authHeader = req.headers['authorization'];
-	const token = authHeader && authHeader.split(' ')[1];
-	if (token == null) {
-		Logger.error('Token is empty');
-		return res.sendStatus(401);
-	}
-	jwt.verify(
-		token,
-		'process.env.TOKEN_SECRET as string',
-		(err, user: IUserAuthenticate | any) => {
-			if (!err) {
-				req.user = user;
-			}
-			next();
-		},
-	);
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) {
+    Logger.error('Token is empty');
+    return res.sendStatus(401);
+  }
+  jwt.verify(
+    token,
+    'process.env.TOKEN_SECRET as string',
+    (err, user: IUserAuthenticate | any) => {
+      if (!err) {
+        req.user = user;
+      }
+      next();
+    },
+  );
 }
