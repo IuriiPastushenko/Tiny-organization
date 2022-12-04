@@ -2,7 +2,7 @@ import express, { Express } from 'express';
 import { UsersRouter } from './users/users.controller';
 import { ServicesRouter } from './services/services.controller';
 import bodyParser from 'body-parser';
-import { Logger, typeOrmConnects } from '../main';
+import { Logger, mongooseConnects, typeOrmConnects } from '../main';
 import { errorMiddleware } from './errors/ error.middleware';
 
 export class ServerOrganization {
@@ -45,5 +45,6 @@ export class ServerOrganization {
       await Logger.write(Logger.dataForWrite);
     });
     await typeOrmConnects.initialize();
+    await mongooseConnects.initialize();
   }
 }

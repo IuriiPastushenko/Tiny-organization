@@ -2,8 +2,8 @@
 
 import axios from 'axios';
 import { keysApiWeather } from './wf.constants';
-import { IWeatherOutput } from './weather.interfaces';
-import { IGetCoordinats } from '../services.interfaces';
+import { IWeatherOutput } from './interfaces/weather.interface';
+import { IGetCoordinats } from './interfaces/getcoordinats.interface';
 
 // Connection api weather forecast
 async function getWeather(

@@ -9,8 +9,8 @@ import {
 import { typeOrmConfig } from './ typeeorm.config';
 import { Employees } from './entities/employees.entity';
 import bcrypt from 'bcryptjs';
-import { IGetCoordinats } from '../services/services.interfaces';
 import { Jobplaces } from './entities/jobplaces.entity';
+import { IGetCoordinats } from '../services/weather/interfaces/getcoordinats.interface';
 
 export class TypeOrmConnects {
   private dataSource: DataSource;
@@ -22,10 +22,10 @@ export class TypeOrmConnects {
   async initialize(): Promise<void> {
     try {
       await this.dataSource.initialize();
-      Logger.log('Connection to BD(TypeORM) successful');
+      Logger.log('Connection to DB(TypeORM) successful');
       await Logger.write(Logger.dataForWrite);
     } catch (err) {
-      Logger.error('Error connection to DB');
+      Logger.error('Error connection to DB(TypeORM)');
       await Logger.write(Logger.dataForWrite);
       throw err;
     }
@@ -144,5 +144,22 @@ export class TypeOrmConnects {
         firstname: employeeFromDB?.firstname,
       },
     ];
+  }
+
+  // Get employee by ID
+  async getEmployee(
+    inputUser: IUserAuthenticate,
+  ): Promise<IGetCoordinats | undefined> {
+    const employeeFromDB = await this.dataSource
+      .getRepository(Employees)
+      .createQueryBuilder('emp')
+      .select('emp.lastname')
+      .addSelect('emp.firstname')
+      .where('emp.id_employee = :id', { id: inputUser.id_employee })
+      .getOne();
+    return {
+      firstname: employeeFromDB?.firstname,
+      lastname: employeeFromDB?.lastname,
+    };
   }
 }
